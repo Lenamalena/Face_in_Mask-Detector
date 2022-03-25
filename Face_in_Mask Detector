@@ -1,0 +1,195 @@
+
+//Листинг программы Face_in_Mask Detector
+namespace Face_in_Mask
+{
+    public partial class Form1 : Form
+    {
+        private static Capture _cameraCapture; //Камера
+        public Form1()
+        {
+            InitializeComponent();
+       
+        }
+                
+        String faceFileNameMy = "cascade.xml"; //модифицированный метод каскада
+        /////////////////////////////////////////
+        //Процедура обработки видео и поиcка лица
+        
+        private void button_standart_Click(object sender, EventArgs e)
+        {
+            Form2 newForm = new Form2();
+            newForm.Show();
+        }
+
+        private void button_my_Click(object sender, EventArgs e)
+        {
+            Form3 newForm3 = new Form3();
+            newForm3.Show();
+        }
+        private void label2_Click(object sender, EventArgs e)
+        {
+            Form3 newForm3 = new Form3();
+            newForm3.Show();
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+            Form2 newForm = new Form2();
+            newForm.Show();
+        }
+
+
+    }
+}
+namespace Face_in_Mask
+{
+    public partial class Form2 : Form
+    {
+        private static Capture _cameraCapture; //Камера
+        public int i=1;
+        public int j=1;
+        public double res;
+        public Form2()
+        {
+            InitializeComponent();
+            Run_standart();
+        }
+
+        private void Form2_Load(object sender, EventArgs e)
+        {
+            
+        }
+
+        void Run_standart()
+        {
+            try
+            {
+                _cameraCapture = new Capture();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return;
+            }
+            Application.Idle += ProcessFrame_standart;
+        }
+        String faceFileNameStandart = "haarcascade_frontalface_default.xml"; //стандартный каскад детектора
+        void ProcessFrame_standart(object sender, EventArgs e)
+        {
+            Image<Bgr, Byte> frame = _cameraCapture.QueryFrame(); //Полученный кадр
+            if (i < 100) i++;
+            using (CascadeClassifier face = new CascadeClassifier(faceFileNameStandart)) //Каскад
+            using (Image<Gray, Byte> gray = frame.Convert<Gray, Byte>()) //Хаар работает с ЧБ изображением
+            {
+                //Детектируем
+                Rectangle[] facesDetected2 = face.DetectMultiScale(
+                        gray, //Исходное изображение
+                        1.1,  //Коэффициент увеличения изображения
+                        50,   //Группировка предварительно обнаруженных событий. Чем их меньше, тем больше ложных тревог
+                        new Size(5, 5), //Минимальный размер изображения
+                        Size.Empty); //Максимальный размер изображения
+                                     //Выводим всё найденное
+                foreach (Rectangle f in facesDetected2)
+                {
+                    frame.Draw(f, new Bgr(Color.Blue), 2);
+                    if (i < 100) j++;
+                    else
+                    {
+                        textBoxStandart.Clear();
+
+                        res = ((double)j / i) * 100;
+                        textBoxStandart.Text = res.ToString() + "%";
+                        i = 1; 
+                        j = 1;
+                    }
+                }
+            }
+            VideoImage.Image = frame;
+
+        }
+
+        private void VideoImage_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
+namespace Face_in_Mask
+{
+    public partial class Form3 : Form
+    {
+        private static Capture _cameraCapture; //Камера
+        public int i = 1;
+        public int j = 1;
+        public double res;
+        public Form3()
+        {
+            InitializeComponent();
+
+            Run_my();
+        }
+
+
+        private void Form3_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        void Run_my()
+        {
+
+            try
+            {
+                _cameraCapture = new Capture();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                return;
+            }
+            Application.Idle += ProcessFrame_standart;
+        }
+        String faceFileNameMy = "cascade.xml"; //стандартный каскад детектора
+        void ProcessFrame_standart(object sender, EventArgs e)
+        {
+            Image<Bgr, Byte> frame = _cameraCapture.QueryFrame(); //Полученный кадр
+            if (i < 150) i++;
+           
+            using (CascadeClassifier face = new CascadeClassifier(faceFileNameMy)) //Каскад
+            using (Image<Gray, Byte> gray = frame.Convert<Gray, Byte>()) //Хаар работает с ЧБ изображением
+            {
+                //Детектируем
+                Rectangle[] facesDetected2 = face.DetectMultiScale(
+                        gray, //Исходное изображение
+                        1.1,  //Коэффициент увеличения изображения
+                        4,   //Группировка предварительно обнаруженных событий. Чем их меньше, тем больше ложных тревог
+                        new Size(5, 5), //Минимальный размер изображения
+                        Size.Empty); //Максимальный размер изображения
+                                     //Выводим всё найденное
+                foreach (Rectangle f in facesDetected2)
+                {
+                    frame.Draw(f, new Bgr(Color.Red), 2);
+                    if (i < 150) j++;
+                    else
+                    {
+                        textBoxMy.Clear();
+                        res = ((double)j / i) * 100;
+                        textBoxMy.Text = res.ToString() + "%";
+                        i = 1;
+                        j = 1;
+
+                    }
+                }
+            }
+            VideoImage.Image = frame;
+
+        }
+
+        private void VideoImage_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+
+   
+}
